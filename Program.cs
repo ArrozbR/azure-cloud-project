@@ -1,27 +1,22 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using TrilhaNetAzureDesafio.Context;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbContext<RHContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoPadrao")));
-
+builder.Services.AddDbContext<RHContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoPadrao")));
+builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Swagger
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
+if (app.Environment.IsDevelopment()){
+    app.MapScalarApiReference();
+    app.MapOpenApi();
+}
 
 app.MapControllers();
+app.UseHttpsRedirection();
 
 app.Run();
